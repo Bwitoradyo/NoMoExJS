@@ -1,0 +1,24 @@
+{
+  "name": "nem",
+  "version": "1.0.0",
+  "description": "Tutorial of node expres mongodb",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "learning",
+    "express",
+    "mongodb"
+  ],
+  "author": "BWitoradyo",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^2.3.0",
+    "cowsay": "^1.2.1"
+  },
+  "devDependencies": {
+    "mocha": "^4.0.1"
+  }
+}
