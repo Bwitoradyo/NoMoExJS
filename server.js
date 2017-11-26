@@ -1,6 +1,7 @@
 const http = require("http"),
 	url = require("url"),
-	fs = require("fs");
+	fs = require("fs"),
+	read = require("./read");
 
 const hostname = "127.0.0.1";
 const port = 3000;
@@ -47,13 +48,21 @@ const server = http.createServer((request, response) => {
 
 })
 
-fs.readFile("charging_locations.json", "utf-8", (err, data) => {
-  if(err) return;
-  serving_data = JSON.parse(data);
-  server.listen(port, hostname, () =>{
-  console.log(`Server running at http://${hostname}:${port}/`)   
-  })
+let listen = new Promise(function(resolve, reject){
+  try{
+       server.listen(port, hostname, () =>{
+       resolve(`Server running at http://${hostname}:${port}/`)   
+      })
+  } catch(error){
+      reject(error);
+  }       
 })
+
+read("charging_locations.json").then ((data) => {
+  serving_data = JSON.parse(data);
+
+  return listen;
+}).then((message) => console.log(message)).catch((error) => console.log(error));
 
 module.exports = {
   handlers: handlers,
