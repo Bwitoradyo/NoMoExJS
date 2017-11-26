@@ -1,42 +1,30 @@
 const http = require("http"),
-	url = require("url");;
+	url = require("url"),
+	fs = require("fs");
 
 const hostname = "127.0.0.1";
 const port = 3000;
 
-const arr_stations = [
-  {
-    id: 1,
-    where: "London",
-    address: "Fifth Avenue 55",
-    type: "Electric Charger"
-  },{
-    id: 2,
-    where: "New York",
-    address: "Fifth Avenue 55",
-    type: "Electric Charger"
-     
-  }
-]
+let serving_data = {};
 
 const handlers = [];
 
 handlers["/"] = (request, response) => {
   response.statusCode=200;
   response.setHeader("Content-type", "application/json");
-  response.end(JSON.stringify(arr_stations));
+  response.end(JSON.stringify(serving_data.data));
 }
 
 handlers["/first"] = (request, response) => {
   response.statusCode=200;
   response.setHeader("Content-type", "application/json");
-  response.end(JSON.stringify(arr_stations[0]));
+  response.end(JSON.stringify(serving_data.data[0]));
 }
 
 handlers["/second"] = (request, response) => {
   response.statusCode=200;
   response.setHeader("Content-type", "application/json");
-  response.end(JSON.stringify(arr_stations[1]));
+  response.end(JSON.stringify(serving_data.data[1]));
 }
 
 handlers["/about"] = (request, response) => {
@@ -59,12 +47,16 @@ const server = http.createServer((request, response) => {
 
 })
 
-server.listen(port, hostname, () =>{
-  console.log(`Server running at http://${hostname}:${port}/`)
+fs.readFile("charging_locations.json", "utf-8", (err, data) => {
+  if(err) return;
+  serving_data = JSON.parse(data);
+  server.listen(port, hostname, () =>{
+  console.log(`Server running at http://${hostname}:${port}/`)   
+  })
 })
 
 module.exports = {
   handlers: handlers,
-  data: arr_stations
+  data: serving_data.data
 };
 

@@ -1,4 +1,7 @@
-const assert = require("assert");
+const assert = require("assert"),
+      {handlers, data} = require("../server"),
+      expect = require("chai").expect,
+      stream = require("stream");
 
 describe("Array", () => {
   describe("indexOf", () => {
@@ -9,7 +12,16 @@ describe("Array", () => {
 })
 
 describe("Server routing", () => {
-  it("should return the first result out the array in  /first call", () => {
-  
+  it("should return the first result out the array in  /first call", (done) => {
+    let request = {};
+    let response = new stream.Writeable({
+      write: (chunk, encoding, next) => {
+        expect(chunk.toString()).to.be.eq(JSON.stringify(data[0]))
+	next();
+        done();
+      }
+    });
+    response.setHeader = (name, value) => {};
+    handlers["/first"](request, response);
   })
 })
