@@ -1,56 +1,43 @@
 const http = require("http"),
-	url = require("url"),
-	fs = require("fs"),
-	read = require("./read");
+      url = require("url"),
+      fs = require("fs"),
+      read = require("./read"),
+      express = require("express");
 
 const hostname = "127.0.0.1";
 const port = 3000;
 
 let serving_data = {};
 
-const handlers = [];
+const app = express();
 
-handlers["/"] = (request, response) => {
-  response.statusCode=200;
-  response.setHeader("Content-type", "application/json");
-  response.end(JSON.stringify(serving_data.data));
-}
 
-handlers["/first"] = (request, response) => {
+app.get("/", (request, response) => {
   response.statusCode=200;
-  response.setHeader("Content-type", "application/json");
-  response.end(JSON.stringify(serving_data.data[0]));
-}
+  response.json(serving_data.data);
+});
 
-handlers["/second"] = (request, response) => {
+app.get("/s/:index", (request, response) => {
+  let index = request.params.index;
   response.statusCode=200;
-  response.setHeader("Content-type", "application/json");
-  response.end(JSON.stringify(serving_data.data[1]));
-}
+  response.json(serving_data.data[parseInt(index)]);
+});
 
-handlers["/about"] = (request, response) => {
+
+app.get("/about", (request, response) => {
   response.statusCode=200;
-  response.setHeader("Content-type", "application/json");
   response.end("video course content");
-}
-
-
-
-const server = http.createServer((request, response) => {
-  var pathname = url.parse(request.url, true).pathname;
- 
-  if(handlers[pathname]){
-    handlers[pathname](request, response);
-  }else{
-    response.statusCode = 404;
-    response.end("Not found");
-  }
-
 })
+
+app.get("*", (request, response) => {
+  response.statusCode = 404;
+  response.end("Not found");
+})
+
 
 let listen = new Promise(function(resolve, reject){
   try{
-       server.listen(port, hostname, () =>{
+       app.listen(port, hostname, () =>{
        resolve(`Server running at http://${hostname}:${port}/`)   
       })
   } catch(error){
@@ -75,9 +62,4 @@ async function start(){
   return serving_data;
 }
   start().then((data) => console.log(data));
-
-module.exports = {
-  handlers: handlers,
-  data: serving_data.data
-};
 
