@@ -64,6 +64,18 @@ read("charging_locations.json").then ((data) => {
   return listen;
 }).then((message) => console.log(message)).catch((error) => console.log(error));
 
+async function start(){
+  try{
+    serving_data = await read("charging_locations.json");
+    serving_data = JSON.parse(serving_data);
+    console.log(await listen);
+  }catch(error){
+    console.error(error);
+  }
+  return serving_data;
+}
+  start().then((data) => console.log(data));
+
 module.exports = {
   handlers: handlers,
   data: serving_data.data
